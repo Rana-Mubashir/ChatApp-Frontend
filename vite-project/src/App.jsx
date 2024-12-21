@@ -1,9 +1,10 @@
 import React from 'react'
+import { Outlet } from 'react-router-dom'
 
 function App() {
   return (
     <div>
-      <p className='text-red-500  text-4xl'>hello i am here starting a new blog app project</p>
+      <Outlet />
     </div>
   )
 }
