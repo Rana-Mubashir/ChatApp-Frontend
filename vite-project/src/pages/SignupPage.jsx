@@ -1,8 +1,21 @@
 import React from 'react'
 import { FcGoogle } from "react-icons/fc";
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 function SignupPage() {
+  
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  async function handleSignup(data){
+    try {
+      const res=await axios.post(`${Env.server}/api/signup`,data)
+      
+    } catch (error) {
+      console.log("error in getting signup",error)
+    }
+  }
+
   return (
     <div className=' h-[100vh] flex '>
       <div className="h-full w-1/2 flex justify-center items-center ">

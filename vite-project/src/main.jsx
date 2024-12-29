@@ -11,6 +11,7 @@ import {
 import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
+import EmailConfirmation from './pages/EmailConfirmation.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
       <Route path='' element={<LoginPage />} />
       <Route path='/signup' element={<SignupPage />} />
       <Route path='/home' element={<LandingPage />} />
+      <Route path='/emailConfirm' element={<EmailConfirmation />} />
     </Route>
   )
 )
