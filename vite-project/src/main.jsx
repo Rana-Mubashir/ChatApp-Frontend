@@ -24,7 +24,7 @@ const router = createBrowserRouter(
       <Route path='' element={<LoginPage />} />
       <Route path='/signup' element={<SignupPage />} />
       <Route path='/home' element={<LandingPage />} />
-      <Route path='/emailConfirm' element={<EmailConfirmation />} />
+      <Route path='/emailConfirm/:userId' element={<EmailConfirmation />} />
       <Route path='/checkout' element={<StripePayment />} />
       <Route path='/success' element={<Success />} />
       <Route path='/cancel' element={<Cancel />} />
