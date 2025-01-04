@@ -5,23 +5,32 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 function SignupPage() {
 
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate=useNavigate()
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false);
+  const [loader, setLoader] = useState(false)
+
 
   async function handleSignup(data) {
+    setLoader(true)
     try {
       const res = await axios.post('/api/user/signup', data)
       if (res) {
         console.log("response for sign up", res)
-        toast.success(res?.data?.message,{
+        toast.success(res?.data?.message, {
           theme: "colored",
         })
+        setLoader(false)
         navigate(`/emailConfirm/${res?.data?.resp?._id}`)
       }
     } catch (error) {
+      setLoader(false)
       console.log("error in getting signup", error)
       toast.error(error?.response?.data?.message, {
         theme: "colored",
@@ -29,9 +38,13 @@ function SignupPage() {
     }
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
   return (
     <div className='h-[100vh] flex'>
-      <div className="h-full w-1/2 flex justify-center items-center">
+      <div className="h-full w-full lg:w-1/2 flex justify-center items-center">
         <div className="flex flex-col gap-4 w-9/12">
           <h1 className='text-4xl font-mono font-bold'>Sign up now</h1>
           <p className='font-extralight'>Create a free account</p>
@@ -147,25 +160,34 @@ function SignupPage() {
                   <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth.message}</p>
                 )}
               </div>
-              <div className="w-1/2">
+              <div className="w-1/2 relative">
                 <label htmlFor="password" className="font-semibold">
                   Password
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="........."
-                  className="w-full border border-slate-300 p-1 rounded-sm"
-                  {...register("password", {
-                    required: "Password is required",
-                    pattern: {
-                      value:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                      message:
-                        "Password must contain at least 8 characters, one uppercase, one lowercase, one digit, and one special character",
-                    },
-                  })}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    placeholder="........."
+                    className="w-full border border-slate-300 p-1 rounded-sm"
+                    {...register("password", {
+                      required: "Password is required",
+                      pattern: {
+                        value:
+                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                        message:
+                          "Password must contain at least 8 characters, one uppercase, one lowercase, one digit, and one special character",
+                      },
+                    })}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
                 )}
@@ -177,7 +199,11 @@ function SignupPage() {
               <label htmlFor="rememberMe">Remember me</label>
             </div>
 
-            <button className='w-full bg-[#00FF7F] text-white p-2 rounded' type='submit'>
+            <button
+              className='w-full bg-[#00FF7F] text-white p-2 rounded'
+              type='submit'
+              disabled={loader}
+            >
               Sign up
             </button>
           </form>
@@ -197,7 +223,7 @@ function SignupPage() {
       </div>
 
       {/* Right Side Image */}
-      <div className="h-full w-1/2">
+      <div className="h-full w-1/2 hidden lg:block">
         <img className='w-full h-full object-cover' src="https://media.istockphoto.com/id/1227400166/photo/data-protection-and-secure-online-payments-cyber-internet-security-technologies-and-data.jpg?s=612x612&w=0&k=20&c=dKxu6Z-92r9IA3lZRbNFWmH4VAsvGAJNIMM5TFfDRwI=" alt="Secure Data" />
       </div>
     </div>

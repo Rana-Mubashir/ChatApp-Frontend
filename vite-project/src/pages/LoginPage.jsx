@@ -12,8 +12,23 @@ Modal.setAppElement("#root");
 
 function LoginPage() {
   const [isOpen, setIsOpen] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate=useNavigate()
+  const [isOpen2, setIsOpen2] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue
+  } = useForm();
+  const {
+    register: registerForgot,
+    handleSubmit: handleSubmitForgot,
+    formState: { errors: errorsForgot },
+    setValue:setValueForgot
+  } = useForm();
+
+  const [emailLoader, setEmailLoader] = useState(false)
+  const navigate = useNavigate()
 
   const openModal = () => {
     setIsOpen(true);
@@ -21,16 +36,28 @@ function LoginPage() {
 
   const closeModal = () => {
     setIsOpen(false);
+    setValue('email','')
+  };
+
+  const openModal2 = () => {
+    setIsOpen2(true);
+  };
+
+  const closeModal2 = () => {
+    setIsOpen2(false);
+    setValueForgot('email','')
   };
 
   async function handleEmailVerification(data) {
+    setEmailLoader(true)
     try {
       const res = await axios.get(`/api/user/verificationbyemail/${data.email}`)
       if (res) {
-        console.log("response ",res)
+        console.log("response ", res)
         toast.success(res?.data?.message, {
           theme: "colored",
         })
+        setEmailLoader(false)
         navigate(`/emailConfirm/${res?.data?.id}`)
       }
     } catch (error) {
@@ -38,6 +65,15 @@ function LoginPage() {
         theme: "colored",
       });
       console.log("error in sending email verification", error)
+      setEmailLoader(false)
+    }
+  }
+
+  async function sendResetPasswordRequest(data) {
+    try {
+      console.log("data", data)
+    } catch (error) {
+      console.log("error in sending reset password link", error)
     }
   }
 
@@ -71,7 +107,9 @@ function LoginPage() {
                 <input type="checkbox" name="" id="" />
                 <p>Remember me</p>
               </div>
-              <p className='underline text-[#00FF7F] cursor-pointer'>Forgot password</p>
+              <p className='underline text-[#00FF7F] cursor-pointer'
+                onClick={openModal2}
+              >Forgot password</p>
             </div>
             <button className='w-full bg-[#00FF7F] text-white p-2 rounded'>Sign in </button>
             <div className="w-full flex items-center gap-2 justify-center p-2 border-2">
@@ -97,6 +135,8 @@ function LoginPage() {
         </div>
       </div>
 
+
+      {/* confirm email modal */}
       <Modal
         isOpen={isOpen}
         onRequestClose={closeModal}
@@ -137,12 +177,73 @@ function LoginPage() {
         <div className="flex justify-center">
           <button
             onClick={handleSubmit(handleEmailVerification)}
-            className="bg-[#00FF7F] text-white py-2 px-6 rounded-md hover:bg-[#00CC66] transition duration-200"
+            disabled={emailLoader}
+            className={`py-2 px-6 rounded-md transition duration-200 ${emailLoader
+              ? " bg-[#00FF7F] text-white cursor-not-allowed"
+              : "bg-[#00FF7F] text-white hover:bg-[#00CC66]"
+              }`}
           >
             Confirm
           </button>
         </div>
       </Modal>
+
+      {/* forgot password modal */}
+      <Modal
+        isOpen={isOpen2}
+        onRequestClose={closeModal2}
+        contentLabel="Forgot Password Modal"
+        className="bg-white border-none p-6 rounded-lg shadow-lg max-w-lg w-full mx-auto mt-24 relative"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+      >
+        <button
+          onClick={closeModal2}
+          className="absolute top-4 right-4 text-xl text-gray-700 hover:text-gray-900"
+        >
+          <AiOutlineClose />
+        </button>
+
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Forgot Your Password?</h2>
+        <p className="text-gray-600 mb-4">
+          Enter your registered email address below. We will send you a password reset link.
+        </p>
+
+        <div className="mb-4">
+          <label htmlFor="email" className="text-sm font-medium text-gray-700">
+            Email Address
+          </label>
+          <input
+            id="email"
+            type="email"
+            {...registerForgot("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                message: "Invalid email address",
+              },
+            })}
+            className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00FF7F]"
+            placeholder="Enter your email"
+          />
+          {errorsForgot.email && (
+            <p className="text-red-500 text-sm mt-1">{errorsForgot.email.message}</p>
+          )}
+        </div>
+
+        <div className="flex justify-center">
+          <button
+            onClick={handleSubmitForgot(sendResetPasswordRequest)}
+            disabled={emailLoader}
+            className={`py-2 px-6 rounded-md transition duration-200 ${emailLoader
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#00FF7F] text-white hover:bg-[#00CC66]"
+              }`}
+          >
+            {emailLoader ? "Sending..." : "Send Reset Link"}
+          </button>
+        </div>
+      </Modal>
+
     </>
   );
 }
