@@ -24,7 +24,7 @@ function LoginPage() {
     register: registerForgot,
     handleSubmit: handleSubmitForgot,
     formState: { errors: errorsForgot },
-    setValue:setValueForgot
+    setValue: setValueForgot
   } = useForm();
 
   const [emailLoader, setEmailLoader] = useState(false)
@@ -36,7 +36,7 @@ function LoginPage() {
 
   const closeModal = () => {
     setIsOpen(false);
-    setValue('email','')
+    setValue('email', '')
   };
 
   const openModal2 = () => {
@@ -45,7 +45,7 @@ function LoginPage() {
 
   const closeModal2 = () => {
     setIsOpen2(false);
-    setValueForgot('email','')
+    setValueForgot('email', '')
   };
 
   async function handleEmailVerification(data) {
@@ -71,8 +71,17 @@ function LoginPage() {
 
   async function sendResetPasswordRequest(data) {
     try {
-      console.log("data", data)
+
+      const res = await axios.get(`/api/user/sendresetlink/${data.email}`)
+      if (res) {
+        toast.success(res?.data?.message, {
+          theme: "colored",
+        })
+      }
     } catch (error) {
+      toast.error(error?.response?.data?.message, {
+        theme: "colored",
+      });
       console.log("error in sending reset password link", error)
     }
   }

@@ -17,6 +17,7 @@ import Cancel from './pages/stripe/components/Cancel.jsx'
 import Success from './pages/stripe/components/Success.jsx'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ResetPassword from './pages/ResetPassword.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,7 +29,7 @@ const router = createBrowserRouter(
       <Route path='/checkout' element={<StripePayment />} />
       <Route path='/success' element={<Success />} />
       <Route path='/cancel' element={<Cancel />} />
-
+      <Route path='/resetpassword/:userid' element={<ResetPassword />} />
     </Route>
   )
 )
