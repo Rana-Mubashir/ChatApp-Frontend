@@ -168,7 +168,7 @@ function SignupPage() {
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
-                    placeholder="........."
+                    placeholder="••••••••••••••"
                     className="w-full border border-slate-300 p-1 rounded-sm"
                     {...register("password", {
                       required: "Password is required",

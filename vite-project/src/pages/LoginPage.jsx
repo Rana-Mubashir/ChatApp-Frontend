@@ -7,12 +7,15 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 Modal.setAppElement("#root");
 
 function LoginPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const {
     register,
@@ -25,6 +28,12 @@ function LoginPage() {
     handleSubmit: handleSubmitForgot,
     formState: { errors: errorsForgot },
     setValue: setValueForgot
+  } = useForm();
+  const {
+    register: registerLogin,
+    handleSubmit: handleSubmitLogin,
+    formState: { errors: errorsLogin },
+    setValue: setValueLogin
   } = useForm();
 
   const [emailLoader, setEmailLoader] = useState(false)
@@ -47,6 +56,26 @@ function LoginPage() {
     setIsOpen2(false);
     setValueForgot('email', '')
   };
+
+  async function handleSignIn(data) {
+    try {
+      console.log("data in signup", data)
+      const res = await axios.post('/api/user/signin', data)
+      if (res) {
+        console.log("response ", res)
+        toast.success(res?.data?.message, {
+          theme: "colored",
+        })
+        localStorage.setItem('userData', JSON.stringify(res?.data?.user))
+        navigate('/home')
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message, {
+        theme: "colored",
+      });
+      console.log("error in sign up", error)
+    }
+  }
 
   async function handleEmailVerification(data) {
     setEmailLoader(true)
@@ -71,7 +100,6 @@ function LoginPage() {
 
   async function sendResetPasswordRequest(data) {
     try {
-
       const res = await axios.get(`/api/user/sendresetlink/${data.email}`)
       if (res) {
         toast.success(res?.data?.message, {
@@ -86,10 +114,15 @@ function LoginPage() {
     }
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
+
   return (
     <>
       <div className='h-[100vh] flex'>
-        <div className="h-full w-1/2 flex justify-center items-center">
+        <div className="h-full w-full lg:w-1/2 flex justify-center items-center">
           <div className="flex flex-col gap-4 w-9/12">
             <h1 className='text-4xl font-mono font-bold'>Welcome back</h1>
             <p className='font-extralight'>Please enter your details</p>
@@ -99,17 +132,45 @@ function LoginPage() {
                 type="text"
                 name=""
                 id=""
+                placeholder="example@example.com"
+                {...registerLogin("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email address",
+                  },
+                })}
                 className='w-full border border-slate-300 p-1 rounded-sm'
               />
+              {errorsLogin.email && (
+                <p className="text-red-500 text-sm mt-1">{errorsLogin.email.message}</p>
+              )}
             </div>
             <div className="">
               <label htmlFor="" className='font-semibold'>Password</label>
-              <input
-                type="text"
-                name=""
-                id=""
-                className='w-full border border-slate-300 p-1 rounded-sm'
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name=""
+                  id=""
+                  className='w-full border border-slate-300 p-1 rounded-sm'
+                  placeholder="••••••••••••••"
+                  {...registerLogin("password", {
+                    required: "Password is required",
+
+                  })}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              {errorsLogin.password && (
+                <p className="text-red-500 text-sm mt-1">{errorsLogin.password.message}</p>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
@@ -120,7 +181,9 @@ function LoginPage() {
                 onClick={openModal2}
               >Forgot password</p>
             </div>
-            <button className='w-full bg-[#00FF7F] text-white p-2 rounded'>Sign in </button>
+            <button className='w-full bg-[#00FF7F] text-white p-2 rounded'
+              onClick={handleSubmitLogin(handleSignIn)}
+            >Sign in </button>
             <div className="w-full flex items-center gap-2 justify-center p-2 border-2">
               <FcGoogle />
               <p>Sign in with Google</p>
@@ -133,13 +196,13 @@ function LoginPage() {
               </span>
             </p>
             <p className=''>Don't have an account?
-              <Link to='/signup'>
+              <Link to='/signup' >
                 <span className='underline cursor-pointer text-[#00FF7F] '>Sign up</span>
               </Link>
             </p>
           </div>
         </div>
-        <div className="h-full w-1/2">
+        <div className="h-full w-1/2 hidden lg:block">
           <img className='w-full h-full' src="https://media.istockphoto.com/id/1227400166/photo/data-protection-and-secure-online-payments-cyber-internet-security-technologies-and-data.jpg?s=612x612&w=0&k=20&c=dKxu6Z-92r9IA3lZRbNFWmH4VAsvGAJNIMM5TFfDRwI=" alt="" />
         </div>
       </div>
