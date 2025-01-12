@@ -15,7 +15,7 @@ function App() {
       if (location.pathname === '/') {
         navigate('/home');
       }
-    } else {
+    } else{
       setIsUser(false);
       if (location.pathname == '/home') {
         navigate('/');
