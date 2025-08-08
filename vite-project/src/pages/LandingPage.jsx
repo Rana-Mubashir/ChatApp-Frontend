@@ -45,7 +45,7 @@ const LandingPage = () => {
   const startNewChat = async (currentUer) => {
     try {
       const participants = [user._id, currentUer._id]
-      const resp = await axios.post('/api/v1/chat/accesschat', { participants })
+      const resp = await axios.post('/api/v1/chat/access', { participants })
       console.log(resp)
       if (resp) {
         const newChat = {
@@ -86,12 +86,12 @@ const LandingPage = () => {
         message,
         chatId
       }
-      const resp = await axios.post('/api/v1/chat/sendmessage', data)
+      const resp = await axios.post('/api/v1/chat/message', data)
       if (resp) {
         socketRef.current.emit("sendMessage", {
           chatId,
           message,
-          senderId:user._id
+          senderId: user._id
         });
         console.log("response for sending message", resp)
       }
@@ -168,47 +168,6 @@ const LandingPage = () => {
             ))}
           </div>
         </div>
-
-        {/* Chats list */}
-        {/* <div className="overflow-y-auto h-[calc(100%-180px)] border-t border-gray-100">
-          <div className="px-3 pt-3 pb-1">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Your Conversations</h3>
-          </div>
-          {allUsers.map(chat => (
-            <div
-              key={chat.id}
-              className={`flex items-center p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${activeChat?._id === chat._id ? 'bg-blue-50' : ''}`}
-              onClick={() => setActiveChat(chat)}
-            >
-              <div className="relative">
-                <img
-                    src="https://www.w3schools.com/howto/img_avatar.png"
-                  alt={chat?.firstName}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
-                />
-                {chat.unread > 0 && (
-                  <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
-                    {chat.unread}
-                  </div>
-                )}
-              </div>
-              <div className="ml-3 flex-1 min-w-0">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium text-gray-800 truncate">{chat?.firstName}</h3>
-                  <span className="text-xs text-gray-500 whitespace-nowrap ml-2">{chat.time}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-gray-500 truncate">{chat.lastMessage}</p>
-                  {chat.unread > 0 ? (
-                    <BiCheckDouble className="text-blue-500 flex-shrink-0" />
-                  ) : (
-                    <BiCheckDouble className="text-gray-400 flex-shrink-0" />
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div> */}
       </div>
 
       {/* Right chat area */}
